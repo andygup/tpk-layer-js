@@ -56,56 +56,53 @@
         require(["esri/map","utils/TPKLayer",
             "dojo/_base/lang","dojo/_base/declare","dojox/encoding/base64","esri/geometry/Extent","esri/layers/ArcGISTiledMapServiceLayer", "dojo/domReady!"],
             function(Map,TPKLayer,lang,declare,base64,Extent,ArcGISTiledMapServiceLayer) {
-            TPKLayer = new TPKLayer();
+                TPKLayer = new TPKLayer();
 
+                fileInput = document.getElementById("file-input");
+                fileInput.addEventListener('change', function() {
+                    console.log("File success");
 
-            fileInput = document.getElementById("file-input");
-            fileInput.addEventListener('change', function() {
-                console.log("File success");
+                    zip.createReader(new zip.BlobReader(fileInput.files[0]), function(zipReader) {
+                        zipReader.getEntries(function(entries){
+                            TPKLayer.setTPKTiles(entries,function(evt){
+                                if(evt){
+                                    map = new Map("map", {
+                                        //basemap: "satellite",
+                                        //center: [-122.45, 37.75], // longitude, latitude
+                                        extent: TPKLayer._extent
+                                        //zoom: 13
+                                    });
 
-                zip.createReader(new zip.BlobReader(fileInput.files[0]), function(zipReader) {
-                    zipReader.getEntries(function(entries){
-                        TPKLayer.setTPKTiles(entries,function(evt){
-                            if(evt){
-                                map = new Map("map", {
-                                    //basemap: "satellite",
-                                    //center: [-122.45, 37.75], // longitude, latitude
-                                    extent: TPKLayer._extent
-                                    //zoom: 13
-                                });
+                                    map.on("load",init);
+                                    var tiles = new ArcGISTiledMapServiceLayer("http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer");
+                                    map.addLayer(tiles);
+                                }
+                            });
 
-                                map.on("load",init);
-                                var tiles = new ArcGISTiledMapServiceLayer("http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer");
-                                map.addLayer(tiles);
-                            }
-                        });
+                        })
 
                     })
+                },false);
 
-                })
-            },false);
+                function init(){
+                    if (!window.File && !window.FileReader && !window.FileList && !window.Blob) {
+                        alert("Your browser does not support reading tpk files.");
+                        return;
+                    } else {
+                        console.log("TPKs supported!")
+                    }
 
-            function init(){
-                if (!window.File && !window.FileReader && !window.FileList && !window.Blob) {
-                    alert("Your browser does not support reading tpk files.");
-                    return;
-                } else {
-                    console.log("TPKs supported!")
+                    basemapLayer = map.getLayer( map.layerIds[0] );
+                    TPKLayer.extend(basemapLayer,function(success){
+                        console.log("success= " + success);
+                    })
                 }
 
-                basemapLayer = map.getLayer( map.layerIds[0] );
-                TPKLayer.extend(basemapLayer,function(success){
-                    console.log("success= " + success);
-                })
-
-
-
+                function onerror(message) {
+                    alert(message);
+                }
             }
-
-            function onerror(message) {
-                alert(message);
-            }
-        });
+        );
     </script>
 </body>
 </html>
