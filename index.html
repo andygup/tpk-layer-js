@@ -33,30 +33,34 @@
 </head>
 
 <body>
-    <div id="header-div">
-        <input type="file" id="file-input" name="files[]" multiple />
-    </div>
-    <div id="map"></div>
+<div id="header-div">
+    <input type="file" id="file-input" name="files[]" multiple />
+</div>
+<div id="map"></div>
 
-    <script>
-        var locationPath = location.pathname.replace(/\/[^/]+$/, "");
-        var dojoConfig = {
-            paths: {
-                utils: locationPath  + "/utils"
-            }
+<script>
+    var locationPath = location.pathname.replace(/\/[^/]+$/, "");
+    var dojoConfig = {
+        paths: {
+            utils: locationPath  + "/utils"
         }
-    </script>
-    <script type="text/javascript" src="lib/zip.js"></script>
-    <script src="http://js.arcgis.com/3.9/"></script>
-    <script>
-        var map,basemapLayer;
-        var fileInput;
-        var tpkEntries,fullExtent,spatialReference,unzip;
+    }
+</script>
+<script type="text/javascript" src="lib/zip.js"></script>
+<script type="text/javascript" src="utils/xml2json.js"></script>
+<script src="http://js.arcgis.com/3.9/"></script>
+<script>
+    var map,basemapLayer;
+    var fileInput,tpkLayer;
+    var tpkEntries,fullExtent,spatialReference,unzip;
 
-        require(["esri/map","utils/TPKLayer",
-            "dojo/_base/lang","dojo/_base/declare","dojox/encoding/base64","esri/geometry/Extent","esri/layers/ArcGISTiledMapServiceLayer", "dojo/domReady!"],
-            function(Map,TPKLayer,lang,declare,base64,Extent,ArcGISTiledMapServiceLayer) {
-                TPKLayer = new TPKLayer();
+    require(["esri/map","utils/TPKLayer",
+                "dojo/_base/lang","dojo/_base/declare",
+                "dojox/encoding/base64","esri/geometry/Extent",
+                "esri/layers/ArcGISTiledMapServiceLayer","utils/TPKLayer",
+                "esri/SpatialReference",
+                "dojo/domReady!"],
+            function(Map,TPKLayer,lang,declare,base64,Extent,ArcGISTiledMapServiceLayer,TPKLayer,SpatialReference) {
 
                 fileInput = document.getElementById("file-input");
                 fileInput.addEventListener('change', function() {
@@ -64,20 +68,11 @@
 
                     zip.createReader(new zip.BlobReader(fileInput.files[0]), function(zipReader) {
                         zipReader.getEntries(function(entries){
-                            TPKLayer.setTPKTiles(entries,function(evt){
-                                if(evt){
-                                    map = new Map("map", {
-                                        //basemap: "satellite",
-                                        //center: [-122.45, 37.75], // longitude, latitude
-                                        extent: TPKLayer._extent
-                                        //zoom: 13
-                                    });
 
-                                    map.on("load",init);
-                                    var tiles = new ArcGISTiledMapServiceLayer("http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer");
-                                    map.addLayer(tiles);
-                                }
-                            });
+                            tpkLayer = new TPKLayer(null,entries);
+                            map = new Map("map");
+                            map.addLayer(tpkLayer);
+
 
                         })
 
@@ -91,18 +86,13 @@
                     } else {
                         console.log("TPKs supported!")
                     }
-
-                    basemapLayer = map.getLayer( map.layerIds[0] );
-                    TPKLayer.extend(basemapLayer,function(success){
-                        console.log("success= " + success);
-                    })
                 }
 
                 function onerror(message) {
                     alert(message);
                 }
             }
-        );
-    </script>
+    );
+</script>
 </body>
 </html>
