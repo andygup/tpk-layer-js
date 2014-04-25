@@ -1,6 +1,6 @@
 define([
-        "dojo/_base/declare","esri/geometry/Extent","dojo/query","esri/SpatialReference","utils/DataStream",
-        "esri/layers/TileInfo","esri/layers/TiledMapServiceLayer","esri/layers/ArcGISTiledMapServiceLayer"],
+    "dojo/_base/declare","esri/geometry/Extent","dojo/query","esri/SpatialReference","utils/DataStream",
+    "esri/layers/TileInfo","esri/layers/TiledMapServiceLayer","esri/layers/ArcGISTiledMapServiceLayer"],
     function(declare,Extent,query,SpatialReference,DataStream,TileInfo,TiledMapServiceLayer,ArcGISTiledMapServiceLayer){
         return declare("m.test",TiledMapServiceLayer,{
             spatialReference:null,
@@ -26,6 +26,7 @@ define([
                     return tile.filename.toLocaleUpperCase();
                 })
 
+                //Parse conf.xml and conf.cdi to get the required setup info
                 this._parseTileInfo(tiles,function(result){
                     this.initialExtent = (this.fullExtent = this._initialExtent);
                     this.tileInfo = new TileInfo(result);
@@ -36,6 +37,13 @@ define([
                 }.bind(this._self));
             },
 
+            /**
+             * Overrides getTileUrl method
+             * @param level
+             * @param row
+             * @param col
+             * @returns {string}
+             */
             getTileUrl:function(level,row,col){
                 var _layersDir = "v101/Layers/_alllayers";
                 var url = this._buildCacheFilePath(_layersDir,level,row,col);
@@ -91,6 +99,12 @@ define([
                 return str;
             },
 
+            /**
+             * Parse conf.cdi
+             * @param tilesInfo
+             * @param callback
+             * @private
+             */
             _parseTileInfo: function(tilesInfo,callback){
                 var that = this._self;
                 var _initialExtent = null;
@@ -129,49 +143,64 @@ define([
                 }
             },
 
+            /**
+             * Parse conf.xml
+             * @param callback
+             * @param context
+             * @private
+             */
             _parseConfig:function(callback,context) {
                 var m_conf_config = this._inMemTilesIndex.indexOf("V101/LAYERS/CONF.XML");
-            if (m_conf_config != -1) {
-                var m_conf = this._inMemTiles[m_conf_config];
-                m_conf.getData(new zip.BlobWriter(), function (data) {
-                    var reader = new FileReader();
-                    reader.addEventListener("loadend", function (evt) {
-                        var result = reader.result;
-                        var str = this._bin2String(result);
+                if (m_conf_config != -1) {
+                    var m_conf = this._inMemTiles[m_conf_config];
+                    m_conf.getData(new zip.BlobWriter(), function (data) {
+                        var reader = new FileReader();
+                        reader.addEventListener("loadend", function (evt) {
+                            var result = reader.result;
+                            var str = this._bin2String(result);
 
-                        var x2js = new X2JS();
+                            var x2js = new X2JS();
 
-                        var jsonObj = x2js.xml_str2json(str);
-                        var cacheInfo = jsonObj.CacheInfo;
-                        var tileInfo = {};
-                        tileInfo.rows = parseInt(cacheInfo.TileCacheInfo.TileRows);
-                        tileInfo.cols = parseInt(cacheInfo.TileCacheInfo.TileCols);
-                        tileInfo.dpi = parseInt(cacheInfo.TileCacheInfo.DPI);
-                        tileInfo.format = cacheInfo.TileImageInfo.CacheTileFormat;
-                        tileInfo.compressionQuality = parseInt(cacheInfo.TileImageInfo.CompressionQuality);
-                        tileInfo.origin = {
-                            x: parseInt(cacheInfo.TileCacheInfo.TileOrigin.X),
-                            y: parseInt(cacheInfo.TileCacheInfo.TileOrigin.Y)
-                        }
-                        tileInfo.spatialReference = {
-                            "wkid": parseInt(cacheInfo.TileCacheInfo.SpatialReference.WKID)
-                        }
+                            var jsonObj = x2js.xml_str2json(str);
+                            var cacheInfo = jsonObj.CacheInfo;
+                            var tileInfo = {};
+                            tileInfo.rows = parseInt(cacheInfo.TileCacheInfo.TileRows);
+                            tileInfo.cols = parseInt(cacheInfo.TileCacheInfo.TileCols);
+                            tileInfo.dpi = parseInt(cacheInfo.TileCacheInfo.DPI);
+                            tileInfo.format = cacheInfo.TileImageInfo.CacheTileFormat;
+                            tileInfo.compressionQuality = parseInt(cacheInfo.TileImageInfo.CompressionQuality);
+                            tileInfo.origin = {
+                                x: parseInt(cacheInfo.TileCacheInfo.TileOrigin.X),
+                                y: parseInt(cacheInfo.TileCacheInfo.TileOrigin.Y)
+                            }
+                            tileInfo.spatialReference = {
+                                "wkid": parseInt(cacheInfo.TileCacheInfo.SpatialReference.WKID)
+                            }
 
-                        var lods = cacheInfo.TileCacheInfo.LODInfos.LODInfo;
-                        var finalLods = [];
-                        for (var i = 0; i < lods.length; i++) {
-                            finalLods.push({"level": parseFloat(lods[i].LevelID), "resolution": parseFloat(lods[i].Resolution), "scale": parseFloat(lods[i].Scale)})
-                        }
+                            var lods = cacheInfo.TileCacheInfo.LODInfos.LODInfo;
+                            var finalLods = [];
+                            for (var i = 0; i < lods.length; i++) {
+                                finalLods.push({"level": parseFloat(lods[i].LevelID), "resolution": parseFloat(lods[i].Resolution), "scale": parseFloat(lods[i].Scale)})
+                            }
 
-                        tileInfo.lods = finalLods;
-                        callback(tileInfo);
-                    }.bind(context))
-                    reader.readAsArrayBuffer(data);
+                            tileInfo.lods = finalLods;
+                            callback(tileInfo);
+                        }.bind(context))
+                        reader.readAsArrayBuffer(data);
 
-                })
-            }
-        },
+                    })
+                }
+            },
 
+            /**
+             * Parses the in memory tile cache and returns a binary tile image
+             * @param layersDir
+             * @param level
+             * @param row
+             * @param col
+             * @param callback
+             * @private
+             */
             _getInMemTiles: function(layersDir,level,row,col,callback){
 
                 var snappedRow = Math.floor(row / 128) * 128;
