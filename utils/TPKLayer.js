@@ -12,7 +12,7 @@ define([
             _inMemTiles: null,
             _inMemTilesIndex: null,
 
-            constructor:function(/* Extent */ initialExtent,/* Blob */ tiles){
+            constructor:function(/* Blob */ tiles){
                 this._self = this;
                 this._inMemTiles = tiles;
                 this._initialExtent = null;

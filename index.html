@@ -69,7 +69,7 @@
                     zip.createReader(new zip.BlobReader(fileInput.files[0]), function(zipReader) {
                         zipReader.getEntries(function(entries){
 
-                            tpkLayer = new TPKLayer(null,entries);
+                            tpkLayer = new TPKLayer(entries);
                             map = new Map("map");
                             map.addLayer(tpkLayer);
 
