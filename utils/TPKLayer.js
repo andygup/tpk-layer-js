@@ -7,7 +7,6 @@ define([
             constructor:function(/* Blob */ tiles){
                 this._self = this;
                 this._inMemTiles = tiles;
-                this._initialExtent = null;
 
                 // Create a new array that contains an index of what is in the zip file. This will let us provide
                 // a highly optimized search pattern based on each tiles filename. We can then look up the
@@ -19,8 +18,8 @@ define([
                 })
 
                 //Parse conf.xml and conf.cdi to get the required setup info
-                this._parseConfCdi(tiles,function(result){
-                    this.initialExtent = (this.fullExtent = this._initialExtent);
+                this._parseConfCdi(tiles,function(initExtent,result){
+                    this.initialExtent = (this.fullExtent = initExtent);
                     this.tileInfo = new TileInfo(result);
                     this.spatialReference = new SpatialReference({wkid:this.tileInfo.spatialReference.wkid});
                     this.loaded = true;
@@ -103,12 +102,12 @@ define([
                             var xmax = parseFloat(envelopeInfo.XMax);
                             var ymax = parseFloat(envelopeInfo.YMax);
 
-                            that._initialExtent = new Extent(
+                            var initExtent = new Extent(
                                 xmin,ymin,xmax,ymax
                             );
 
-                            that._parseConfXml(function(result){
-                                callback(result)
+                            that._parseConfXml(initExtent,function(initExtent,result){
+                                callback(initExtent,result)
                             },that)
 
                         }.bind(that))
@@ -123,7 +122,7 @@ define([
              * @param context
              * @private
              */
-            _parseConfXml:function(callback,context) {
+            _parseConfXml:function(initExtent,callback,context) {
                 var m_conf_config = this._inMemTilesIndex.indexOf("V101/LAYERS/CONF.XML");
                 if (m_conf_config != -1) {
                     var m_conf = this._inMemTiles[m_conf_config];
@@ -161,7 +160,7 @@ define([
                             }
 
                             tileInfo.lods = finalLods;
-                            callback(tileInfo);
+                            callback(initExtent,tileInfo);
                         }.bind(context))
                         reader.readAsArrayBuffer(data);
                     })
