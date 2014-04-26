@@ -180,7 +180,10 @@ define([
                             var lods = cacheInfo.TileCacheInfo.LODInfos.LODInfo;
                             var finalLods = [];
                             for (var i = 0; i < lods.length; i++) {
-                                finalLods.push({"level": parseFloat(lods[i].LevelID), "resolution": parseFloat(lods[i].Resolution), "scale": parseFloat(lods[i].Scale)})
+                                finalLods.push({
+                                    "level": parseFloat(lods[i].LevelID),
+                                    "resolution": parseFloat(lods[i].Resolution),
+                                    "scale": parseFloat(lods[i].Scale)})
                             }
 
                             tileInfo.lods = finalLods;
@@ -202,6 +205,8 @@ define([
              * @private
              */
             _getInMemTiles: function(layersDir,level,row,col,callback){
+
+                var that = this._self;
 
                 var snappedRow = Math.floor(row / 128) * 128;
                 var snappedCol = Math.floor(col / 128) * 128;
@@ -237,8 +242,8 @@ define([
                         var reader = new FileReader();
                         reader.addEventListener("loadend", function(evt) {
 
-                            var t = this.result.slice(offset);
-                            var dv =  new DataView(t,0,5);
+                            var snip = this.result.slice(offset);
+                            var dv =  new DataView(snip,0,5);
 
                             var nume1 = dv.getUint8(0,true);
                             var nume2 = dv.getUint8(1,true);
@@ -255,25 +260,25 @@ define([
                             bundle.getData(new zip.BlobWriter(),function(data){
                                 var reader = new FileReader();
                                 reader.addEventListener("loadend", function(evt) {
-
-                                    //Notes: Range limits in Chrome: https://bugs.webkit.org/show_bug.cgi?id=80797
-                                    var stream = new DataStream(this.result, 0,
-                                        DataStream.LITTLE_ENDIAN);
-                                    stream.seek(value);
-                                    var u = stream.readInt32(true);
-                                    var t = stream.readString(u);
-                                    callback(btoa(t))
+                                    var str = that._stream2String(this.result,value);
+                                    callback(str);
                                 })
                                 reader.readAsArrayBuffer(data); //open bundle
-                            })
-
-                            console.log("Pointer value: " + value);
-
+                            }.bind(that))
                         });
                         reader.readAsArrayBuffer(data); //open bundleX
-                    })
+                    }.bind(that))
                 }
                 console.log("url  " +  path);
+            },
+
+            _stream2String: function(/* Blob */stream,/* int */ position){
+                var stream = new DataStream(stream, 0,
+                    DataStream.LITTLE_ENDIAN);
+                stream.seek(position);
+                var chunk = stream.readInt32(true);
+                var string = stream.readString(chunk);  //Notes: Range limits in Chrome: https://bugs.webkit.org/show_bug.cgi?id=80797
+                return btoa(string); 
             },
 
             _calcOffset: function(/* int */level, /* number */row,/* number */col, /* number */startRow, /* number */ startCol){
