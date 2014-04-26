@@ -242,20 +242,7 @@ define([
                         var reader = new FileReader();
                         reader.addEventListener("loadend", function(evt) {
 
-                            var snip = this.result.slice(offset);
-                            var dv =  new DataView(snip,0,5);
-
-                            var nume1 = dv.getUint8(0,true);
-                            var nume2 = dv.getUint8(1,true);
-                            var nume3 = dv.getUint8(2,true);
-                            var nume4 = dv.getUint8(3,true);
-                            var nume5 = dv.getUint8(4,true);
-
-                            var value = nume5;
-                            value = value * 256 + nume4;
-                            value = value * 256 + nume3;
-                            value = value * 256 + nume2;
-                            value = value * 256 + nume1;
+                            var value = that._getPointer(this.result,offset);
 
                             bundle.getData(new zip.BlobWriter(),function(data){
                                 var reader = new FileReader();
@@ -272,13 +259,32 @@ define([
                 console.log("url  " +  path);
             },
 
+            _getPointer: function(/* Blob */ blob,offset){
+                var snip = blob.slice(offset);
+                var dv =  new DataView(snip,0,5);
+
+                var nume1 = dv.getUint8(0,true);
+                var nume2 = dv.getUint8(1,true);
+                var nume3 = dv.getUint8(2,true);
+                var nume4 = dv.getUint8(3,true);
+                var nume5 = dv.getUint8(4,true);
+
+                var value = nume5;
+                value = value * 256 + nume4;
+                value = value * 256 + nume3;
+                value = value * 256 + nume2;
+                value = value * 256 + nume1;
+
+                return value;
+            },
+
             _stream2String: function(/* Blob */stream,/* int */ position){
                 var stream = new DataStream(stream, 0,
                     DataStream.LITTLE_ENDIAN);
                 stream.seek(position);
                 var chunk = stream.readInt32(true);
                 var string = stream.readString(chunk);  //Notes: Range limits in Chrome: https://bugs.webkit.org/show_bug.cgi?id=80797
-                return btoa(string); 
+                return btoa(string);
             },
 
             _calcOffset: function(/* int */level, /* number */row,/* number */col, /* number */startRow, /* number */ startCol){
