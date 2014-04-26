@@ -50,7 +50,7 @@ define([
 
                         console.assert(typeof img != "undefined", "undefined image detected");
 
-                        if (result != null) {
+                        if (result) {
                             img.style.borderColor = "blue";
                             console.log("found tile offline", url);
                             imgURL = "data:image/png;base64," + result;
