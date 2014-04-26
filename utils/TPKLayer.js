@@ -19,7 +19,7 @@ define([
                 })
 
                 //Parse conf.xml and conf.cdi to get the required setup info
-                this._parseTileInfo(tiles,function(result){
+                this._parseConfCdi(tiles,function(result){
                     this.initialExtent = (this.fullExtent = this._initialExtent);
                     this.tileInfo = new TileInfo(result);
                     this.spatialReference = new SpatialReference({wkid:this.tileInfo.spatialReference.wkid});
@@ -38,7 +38,7 @@ define([
              */
             getTileUrl:function(level,row,col){
                 var _layersDir = "v101/Layers/_alllayers";
-                var url = this._buildCacheFilePath(_layersDir,level,row,col);
+                var url = this._getCacheFilePath(_layersDir,level,row,col);
                 if(this._inMemTiles.length > 0) {
                     /* temporary URL returned immediately, as we haven't retrieved the image from the indexeddb yet */
                     var tileid = "void:/" + level + "/" + row + "/" + col;
@@ -80,7 +80,7 @@ define([
              * @param callback
              * @private
              */
-            _parseTileInfo: function(tilesInfo,callback){
+            _parseConfCdi: function(tilesInfo,callback){
                 var that = this._self;
                 var _initialExtent = null;
                 var m_conf_config = this._inMemTilesIndex.indexOf("V101/LAYERS/CONF.XML");
@@ -107,7 +107,7 @@ define([
                                 xmin,ymin,xmax,ymax
                             );
 
-                            that._parseConfig(function(result){
+                            that._parseConfXml(function(result){
                                 callback(result)
                             },that)
 
@@ -123,7 +123,7 @@ define([
              * @param context
              * @private
              */
-            _parseConfig:function(callback,context) {
+            _parseConfXml:function(callback,context) {
                 var m_conf_config = this._inMemTilesIndex.indexOf("V101/LAYERS/CONF.XML");
                 if (m_conf_config != -1) {
                     var m_conf = this._inMemTiles[m_conf_config];
@@ -184,7 +184,7 @@ define([
                 var snappedRow = Math.floor(row / 128) * 128;
                 var snappedCol = Math.floor(col / 128) * 128;
 
-                var path = this._buildCacheFilePath(layersDir,level,snappedRow,snappedCol).toLocaleUpperCase();
+                var path = this._getCacheFilePath(layersDir,level,snappedRow,snappedCol).toLocaleUpperCase();
 
                 var offset;
                 var bundle;
@@ -277,7 +277,7 @@ define([
                 return 16 + recordNumber * 5;
             },
 
-            _buildCacheFilePath: function(/* String */ layerDir, /* int */level, /* int */row, /* int */ col){
+            _getCacheFilePath: function(/* String */ layerDir, /* int */level, /* int */row, /* int */ col){
                 var arr = [];
 
                 arr.push(layerDir);
