@@ -5,6 +5,12 @@ define([
         return declare("m.test",TiledMapServiceLayer,{
 
             constructor:function(/* Blob */ tiles){
+
+                if(!window.File && !window.FileReader && !window.Blob && !window.btoa){
+                    throw "This library is not supported on your browser!"
+                    return null;
+                }
+
                 this._self = this;
                 this._inMemTiles = tiles;
 
