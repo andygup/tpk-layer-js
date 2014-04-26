@@ -202,7 +202,7 @@ define([
 
                 if(typeof  bundleX != "undefined"){
 
-                    offset = this._calcOffset(level, row, col, snappedRow, snappedCol);
+                    offset = this._getOffset(level, row, col, snappedRow, snappedCol);
 
                     //read bundlex
                     bundleX.getData(new zip.BlobWriter(),function(data){
@@ -272,28 +272,7 @@ define([
                 return btoa(string);
             },
 
-            _calcOffset: function(/* int */level, /* number */row,/* number */col, /* number */startRow, /* number */ startCol){
-                var recordNumber = 128 * (col - startCol) + (row - startRow);
-                return 16 + recordNumber * 5;
-            },
-
-            _getCacheFilePath: function(/* String */ layerDir, /* int */level, /* int */row, /* int */ col){
-                var arr = [];
-
-                arr.push(layerDir);
-                arr.push("/");
-                arr.push("L");
-                arr.push(level < 10 ? "0" + level : level);
-                arr.push("/");
-                arr.push("R");
-                arr.push(this._toHexString(row));
-                arr.push("C");
-                arr.push(this._toHexString(col));
-
-                return arr.join("");
-            },
-
-            _toHexString: function(/* int */ value){
+            _int2HexString: function(/* int */ value){
                 var text = value.toString(16).toUpperCase();
                 if (text.length === 1)
                 {
@@ -308,6 +287,27 @@ define([
                     return "0" + text;
                 }
                 return text.substr(0, text.length);
+            },
+
+            _getOffset: function(/* int */level, /* number */row,/* number */col, /* number */startRow, /* number */ startCol){
+                var recordNumber = 128 * (col - startCol) + (row - startRow);
+                return 16 + recordNumber * 5;
+            },
+
+            _getCacheFilePath: function(/* String */ layerDir, /* int */level, /* int */row, /* int */ col){
+                var arr = [];
+
+                arr.push(layerDir);
+                arr.push("/");
+                arr.push("L");
+                arr.push(level < 10 ? "0" + level : level);
+                arr.push("/");
+                arr.push("R");
+                arr.push(this._int2HexString(row));
+                arr.push("C");
+                arr.push(this._int2HexString(col));
+
+                return arr.join("");
             }
         })
     }
