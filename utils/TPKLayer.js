@@ -237,6 +237,7 @@ define([
 
                     offset = this._calcOffset(level, row, col, snappedRow, snappedCol);
 
+                    //read bundlex
                     bundleX.getData(new zip.BlobWriter(),function(data){
 
                         var reader = new FileReader();
@@ -244,6 +245,7 @@ define([
 
                             var value = that._getPointer(this.result,offset);
 
+                            //read bundle
                             bundle.getData(new zip.BlobWriter(),function(data){
                                 var reader = new FileReader();
                                 reader.addEventListener("loadend", function(evt) {
