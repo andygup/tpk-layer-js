@@ -83,22 +83,6 @@ define([
             },
 
             /**
-             * Converts a blob to a string
-             * @param blob
-             * @returns {string}
-             * @private
-             */
-            _bin2String: function(blob){
-                var str = "";
-                var arr = new Uint8Array(blob,0);
-                var length = arr.length;
-                for (var i = 0; i < length; i++) {
-                    str += String.fromCharCode(arr[i])
-                }
-                return str;
-            },
-
-            /**
              * Parse conf.cdi
              * @param tilesInfo
              * @param callback
@@ -240,7 +224,7 @@ define([
                             bundle.getData(new zip.BlobWriter(),function(data){
                                 var reader = new FileReader();
                                 reader.addEventListener("loadend", function(evt) {
-                                    var str = that._stream2String(this.result,value);
+                                    var str = that._stream2Base64(this.result,value);
                                     callback(str);
                                 })
                                 reader.readAsArrayBuffer(data); //open bundle
@@ -271,7 +255,23 @@ define([
                 return value;
             },
 
-            _stream2String: function(/* Blob */stream,/* int */ position){
+            /**
+             * Converts a blob to a string
+             * @param blob
+             * @returns {string}
+             * @private
+             */
+            _bin2String: function(blob){
+                var str = "";
+                var arr = new Uint8Array(blob,0);
+                var length = arr.length;
+                for (var i = 0; i < length; i++) {
+                    str += String.fromCharCode(arr[i])
+                }
+                return str;
+            },
+
+            _stream2Base64: function(/* Blob */stream,/* int */ position){
                 var stream = new DataStream(stream, 0,
                     DataStream.LITTLE_ENDIAN);
                 stream.seek(position);
