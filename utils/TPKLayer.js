@@ -6,8 +6,8 @@ define([
 
             constructor:function(/* Blob */ tiles){
 
-                if(!window.File && !window.FileReader && !window.Blob && !window.btoa){
-                    throw "This library is not supported on your browser!"
+                if(!window.File && !window.FileReader && !window.Blob && !window.btoa && !window.DataView){
+                    throw "This library is not supported on your browser!";
                     return null;
                 }
 
