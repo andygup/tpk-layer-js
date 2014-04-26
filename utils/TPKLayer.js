@@ -3,14 +3,6 @@ define([
     "esri/layers/TileInfo","esri/layers/TiledMapServiceLayer","esri/layers/ArcGISTiledMapServiceLayer"],
     function(declare,Extent,query,SpatialReference,DataStream,TileInfo,TiledMapServiceLayer,ArcGISTiledMapServiceLayer){
         return declare("m.test",TiledMapServiceLayer,{
-            spatialReference:null,
-            _initialExtent:null,
-            initialExtent:null,
-            tileInfo:null,
-            loaded:false,
-
-            _inMemTiles: null,
-            _inMemTilesIndex: null,
 
             constructor:function(/* Blob */ tiles){
                 this._self = this;
