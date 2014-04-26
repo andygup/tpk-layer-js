@@ -224,7 +224,7 @@ define([
                             bundle.getData(new zip.BlobWriter(),function(data){
                                 var reader = new FileReader();
                                 reader.addEventListener("loadend", function(evt) {
-                                    var str = that._stream2Base64(this.result,value);
+                                    var str = that._bin2Base64(this.result,value);
                                     callback(str);
                                 })
                                 reader.readAsArrayBuffer(data); //open bundle
@@ -261,7 +261,7 @@ define([
              * @returns {string}
              * @private
              */
-            _bin2String: function(blob){
+            _bin2String: function(/* Blob */ blob){
                 var str = "";
                 var arr = new Uint8Array(blob,0);
                 var length = arr.length;
@@ -271,8 +271,8 @@ define([
                 return str;
             },
 
-            _stream2Base64: function(/* Blob */stream,/* int */ position){
-                var stream = new DataStream(stream, 0,
+            _bin2Base64: function(/* Blob */blob,/* int */ position){
+                var stream = new DataStream(blob, 0,
                     DataStream.LITTLE_ENDIAN);
                 stream.seek(position);
                 var chunk = stream.readInt32(true);
