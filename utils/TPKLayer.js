@@ -313,6 +313,14 @@ define([
                 arr.push(this._int2HexString(col));
 
                 return arr.join("");
+            },
+
+            _getFileNameExtension: function(filename){
+                var str = filename.split(".");
+                if( str.length === 1 || ( str[0] === "" && str.length === 2 ) ) {
+                    return "";
+                }
+                return str.pop().toLocaleUpperCase();
             }
         })
     }
