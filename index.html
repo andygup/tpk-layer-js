@@ -59,13 +59,8 @@
     var map;
     var fileInput,tpkLayer;
 
-    require(["esri/map","utils/TPKLayer",
-                "dojo/_base/lang","dojo/_base/declare",
-                "dojox/encoding/base64","esri/geometry/Extent",
-                "esri/layers/ArcGISTiledMapServiceLayer","utils/TPKLayer",
-                "esri/SpatialReference",
-                "dojo/domReady!"],
-            function(Map,TPKLayer,lang,declare,base64,Extent,ArcGISTiledMapServiceLayer,TPKLayer,SpatialReference) {
+    require(["esri/map","utils/TPKLayer","dojo/domReady!"],
+            function(Map,TPKLayer) {
 
                 fileInput = document.getElementById("file-input");
                 fileInput.addEventListener('change', function() {
