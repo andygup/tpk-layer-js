@@ -1,7 +1,7 @@
 define([
     "dojo/_base/declare","esri/geometry/Extent","dojo/query","esri/SpatialReference","utils/DataStream",
-    "esri/layers/TileInfo","esri/layers/TiledMapServiceLayer","utils/zip"],
-    function(declare,Extent,query,SpatialReference,DataStream,TileInfo,TiledMapServiceLayer,zip){
+    "esri/layers/TileInfo","esri/layers/TiledMapServiceLayer","utils/zip","utils/xml2json"],
+    function(declare,Extent,query,SpatialReference,DataStream,TileInfo,TiledMapServiceLayer,zip,X2JS){
         return declare("m.test",TiledMapServiceLayer,{
 
             constructor:function(/* Blob */ tiles){
