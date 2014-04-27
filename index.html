@@ -56,9 +56,8 @@
 <script type="text/javascript" src="utils/xml2json.js"></script>
 <script src="http://js.arcgis.com/3.9/"></script>
 <script>
-    var map,basemapLayer;
+    var map;
     var fileInput,tpkLayer;
-    var tpkEntries,fullExtent,spatialReference,unzip;
 
     require(["esri/map","utils/TPKLayer",
                 "dojo/_base/lang","dojo/_base/declare",
@@ -86,19 +85,6 @@
 
                     })
                 },false);
-
-                function init(){
-                    if (!window.File && !window.FileReader && !window.FileList && !window.Blob) {
-                        alert("Your browser does not support reading tpk files.");
-                        return;
-                    } else {
-                        console.log("TPKs supported!")
-                    }
-                }
-
-                function onerror(message) {
-                    alert(message);
-                }
             }
     );
 </script>
