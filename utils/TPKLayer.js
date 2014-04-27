@@ -4,7 +4,7 @@ define([
     function(declare,Extent,query,SpatialReference,DataStream,TileInfo,TiledMapServiceLayer,zip,X2JS){
         return declare("m.test",TiledMapServiceLayer,{
 
-            constructor:function(/* Blob */ tiles){
+            constructor:function(/* zip */ tiles){
 
                 if(!window.File && !window.FileReader && !window.Blob && !window.btoa && !window.DataView){
                     throw "This library is not supported on your browser!";
