@@ -1,13 +1,13 @@
 tpk-layer-js
 ============
 
-Prototype JavaScript library for importing a TPK file to create an ArcGISTiledMapServiceLayer. 
+JavaScript library for creating a tile map layer based on an Esri TPK file. 
 
 Example TPK file: [Imagery Basemap TPK](http://www.arcgis.com/home/item.html?id=4497b7bb42e543b691027840d1b9092a)
 
 ## Minimum Requirements
 
-* ArcGIS API for JavaScript
+* ArcGIS API for JavaScript 3.8+
 
 ## Resources
 
