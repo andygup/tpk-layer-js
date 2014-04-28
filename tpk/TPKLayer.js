@@ -1,7 +1,7 @@
 define([
-    "dojo/_base/declare","esri/geometry/Extent","dojo/query","esri/SpatialReference","utils/DataStream",
-    "esri/layers/TileInfo","esri/layers/TiledMapServiceLayer","utils/zip","utils/xml2json"],
-    function(declare,Extent,query,SpatialReference,DataStream,TileInfo,TiledMapServiceLayer,zip,X2JS){
+    "dojo/_base/declare","esri/geometry/Extent","dojo/query","esri/SpatialReference","tpk/DataStream",
+    "esri/layers/TileInfo","esri/layers/TiledMapServiceLayer","tpk/zip","tpk/xml2json","dojo/Deferred"],
+    function(declare,Extent,query,SpatialReference,DataStream,TileInfo,TiledMapServiceLayer,zip,X2JS,Deferred){
         return declare("m.test",TiledMapServiceLayer,{
 
             constructor:function(/* zip */ tiles){
@@ -48,7 +48,7 @@ define([
                     /* temporary URL returned immediately, as we haven't retrieved the image from the indexeddb yet */
                     var tileid = "void:/" + level + "/" + row + "/" + col;
 
-                    this._getInMemTiles(_layersDir, level, row, col, function (result) {
+                    var process = this._getInMemTiles(url,_layersDir, level, row, col, function (result) {
 
                         var img = query("img[src=" + tileid + "]")[0];
                         var imgURL;
@@ -73,7 +73,7 @@ define([
                         console.log("URL length " + imgURL.length + ", url: " + imgURL)
                         return "";
                         /* this result goes nowhere, seriously */
-                    });
+                    }.bind(this._self));
 
                     return tileid;
                 }
@@ -125,7 +125,7 @@ define([
             /**
              * Parse conf.xml
              * @param callback
-             * @param context
+             * @param context                    var deferred = new Deferred();
              * @private
              */
             _parseConfXml:function(initExtent,callback,context) {
@@ -182,7 +182,7 @@ define([
              * @param callback
              * @private
              */
-            _getInMemTiles: function(layersDir,level,row,col,callback){
+            _getInMemTiles: function(url,layersDir,level,row,col,callback){
 
                 var that = this._self;
 
@@ -191,6 +191,7 @@ define([
 
                 var path = this._getCacheFilePath(layersDir,level,snappedRow,snappedCol).toLocaleUpperCase();
 
+                var url = url;
                 var offset;
                 var bundle;
                 var bundleX;
