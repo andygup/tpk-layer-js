@@ -160,11 +160,11 @@
 
                             var loading = dojo.byId("loader-gif");
 
-                            tpkLayer = new TPKLayer(entries);
+                            tpkLayer = new TPKLayer();
                             tpkLayer.on("progress", function (evt) {
-                                evt.total == evt.loaded ? loading.style.visibility = "hidden" : loading.style.visibility = "visible";
-                                console.log("Total " + evt.total + ", loaded: " + evt.loaded + ", vis " + loading.style.visibility)
+                                evt == "start" ? loading.style.visibility = "visible" : loading.style.visibility = "hidden";
                             })
+                            tpkLayer.extend(entries);
 
                             map = new Map("map");
                             map.addLayer(tpkLayer);
