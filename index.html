@@ -177,6 +177,7 @@
                  * Get a TPK file from a remote server via a URL
                  */
                 function initGetRemoteFile(){
+                    getFileBtn.innerHTML = "Get file via url";
                     urlInput = document.getElementById("url-btn");
                     urlInput.onclick = function(){
                         var xhrRequest = new XMLHttpRequest();
