@@ -142,6 +142,9 @@
                     zip.createReader(new zip.BlobReader(blob), function (zipReader) {
                         zipReader.getEntries(function (entries) {
                             initMap(entries);
+                            zipReader.close(function(evt){
+                                console.log("Done reading zip file.")
+                            })
                         }, function (err) {
                             alert("There was a problem reading the file!: " + err);
                         })
